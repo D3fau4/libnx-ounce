@@ -93,6 +93,28 @@ Result _fsInitialize(void) {
     return rc;
 }
 
+Result fsInitializeFromFspSrvHandle(Handle handle, bool is_domain, bool is_owned) {
+    Result rc = 0;
+    
+    serviceCreate(&g_fsSrv, handle);
+    g_fsSrv.own_handle = is_owned;
+
+    if (!is_domain) {
+        rc = serviceConvertToDomain(&g_fsSrv);
+
+        if (R_SUCCEEDED(rc)) {
+            u64 pid_placeholder = 0;
+            serviceAssumeDomain(&g_fsSrv);
+            rc = serviceDispatchIn(&g_fsSrv, 1, pid_placeholder, .in_send_pid = true);
+        }
+    }
+
+    if (R_SUCCEEDED(rc))
+        rc = sessionmgrCreate(&g_fsSessionMgr, g_fsSrv.session, __nx_fs_num_sessions);
+
+    return rc;
+}
+
 void _fsCleanup(void) {
     // Close extra sessions
     sessionmgrClose(&g_fsSessionMgr);

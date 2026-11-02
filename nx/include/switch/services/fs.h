@@ -487,6 +487,9 @@ typedef struct {
 /// Initialize fsp-srv. Used automatically during app startup.
 Result fsInitialize(void);
 
+/// Initialize fsp-srv from an existing fsp-srv service handle.
+Result fsInitializeFromFspSrvHandle(Handle handle, bool is_domain, bool is_owned);
+
 /// Exit fsp-srv. Used automatically during app exit.
 void fsExit(void);
 
