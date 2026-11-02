@@ -24,7 +24,7 @@ INCLUDES	:=	include external/bsd/include
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec
+ARCH	:=	-march=armv8.2-a+crc+crypto+pauth -mtune=cortex-a78c -mtp=soft -fPIC -ftls-model=local-exec
 
 CFLAGS	:=	-g -Wall -Werror \
 			-ffunction-sections \
@@ -32,7 +32,7 @@ CFLAGS	:=	-g -Wall -Werror \
 			$(ARCH) \
 			$(BUILD_CFLAGS)
 
-CFLAGS	+=	$(INCLUDE) -D__SWITCH__ -DLIBNX_NO_DEPRECATION
+CFLAGS	+=	$(INCLUDE) -D__SWITCH__ -D__SWITCH2__ -DLIBNX_NO_DEPRECATION
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 
@@ -89,10 +89,10 @@ export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 all: lib/libnx.a lib/libnxd.a
 
 install: lib/libnx.a lib/libnxd.a
-	@mkdir -p $(DESTDIR)$(DEVKITPRO)/libnx
-	@cp -v default_icon.jpg switch_rules switch.ld switch.specs $(DESTDIR)$(DEVKITPRO)/libnx/
-	@cp -rv include lib $(DESTDIR)$(DEVKITPRO)/libnx/
-	@cp -rv external/bsd/include $(DESTDIR)$(DEVKITPRO)/libnx/
+	@mkdir -p $(DESTDIR)$(DEVKITPRO)/libounce
+	@cp -v default_icon.jpg switch_rules switch.ld switch.specs $(DESTDIR)$(DEVKITPRO)/libounce/
+	@cp -rv include lib $(DESTDIR)$(DEVKITPRO)/libounce/
+	@cp -rv external/bsd/include $(DESTDIR)$(DEVKITPRO)/libounce/
 
 dist-src:
 	@tar -cjf libnx-`git describe --tags | sed 's/^v//'`.tar.bz2 include source data external Makefile default_icon.jpg switch_rules switch.ld switch.specs
