@@ -799,6 +799,11 @@ SVC_BEGIN svcCallSecureMonitor
 	ret
 SVC_END
 
+SVC_BEGIN svcSetGpuMemoryAttribute
+	svc 0x80
+	ret
+SVC_END
+
 SVC_BEGIN svcMapInsecurePhysicalMemory
 	svc 0x90
 	ret

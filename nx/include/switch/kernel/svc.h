@@ -212,7 +212,11 @@ typedef enum {
     InfoType_IsSvcPermitted                 = 26, ///< [14.0.0+] Does process have access to SVC (only usable with \ref svcSynchronizePreemptionState at present).
     InfoType_IoRegionHint                   = 27, ///< [16.0.0+] Low bits of the physical address for a KIoRegion.
     InfoType_AliasRegionExtraSize           = 28, ///< [18.0.0+] Extra size added to the reserved region.
-
+    InfoType_RemoteRegionAddress            = 29, ///< [19.0.0+, S2]
+    InfoType_RemoteRegionSize               = 30, ///< [19.0.0+, S2]
+    InfoType_RemoteMemorySize               = 31, ///< [19.0.0+, S2]
+    InfoType_RemoteMemoryUsageMax           = 32, ///< [19.0.0+, S2]
+    InfoType_AllocateAlignment              = 33, ///< [19.0.0+, S2]
     InfoType_TransferMemoryHint             = 34, ///< [19.0.0+] Low bits of the process address for a KTransferMemory.
     
     InfoType_AddressSpaceSize               = 36, ///< [23.0.0+]
@@ -235,6 +239,10 @@ typedef enum {
     TickCountInfo_Core1 = 1,       ///< Tick count on core 1.
     TickCountInfo_Core2 = 2,       ///< Tick count on core 2.
     TickCountInfo_Core3 = 3,       ///< Tick count on core 3.
+    TickCountInfo_Core4 = 4,       ///< Tick count on core 4. [S2]
+    TickCountInfo_Core5 = 5,       ///< Tick count on core 5. [S2]
+    TickCountInfo_Core6 = 6,       ///< Tick count on core 6. [S2]
+    TickCountInfo_Core7 = 7,       ///< Tick count on core 7. [S2]
 
     TickCountInfo_Total = UINT64_MAX, ///< ThreadTickCount: Tick count on all cores, IdleTickCount: Thread's current core.
 } TickCountInfo;
@@ -485,13 +493,13 @@ Result svcSetMemoryPermission(void* addr, u64 size, u32 perm);
  * @brief Set the memory attributes of a (page-aligned) range of memory.
  * @param[in] addr Start address of the range.
  * @param[in] size Size of the range, in bytes.
- * @param[in] val0 State0
- * @param[in] val1 State1
+ * @param[in] mask Mask of bits to change.
+ * @param[in] attr New attribute bits to set.
  * @return Result code.
  * @remark See <a href="https://switchbrew.org/wiki/SVC#svcSetMemoryAttribute">switchbrew.org Wiki</a> for more details.
  * @note Syscall number 0x03.
  */
-Result svcSetMemoryAttribute(void* addr, u64 size, u32 val0, u32 val1);
+Result svcSetMemoryAttribute(void* addr, u64 size, u32 mask, u32 attr);
 
 /**
  * @brief Maps a memory range into a different range. Mainly used for adding guard pages around stack.
@@ -1746,6 +1754,18 @@ void svcCallSecureMonitor(SecmonArgs* regs);
 
 ///@name Memory management
 ///@{
+
+/**
+ * @brief Set the memory attributes of a (page-aligned) range of memory.
+ * @param[in] addr Start address of the range.
+ * @param[in] size Size of the range, in bytes.
+ * @param[in] mask Mask of bits to change.
+ * @param[in] attr New attribute bits to set.
+ * @return Result code.
+ * @remark See <a href="https://switchbrew.org/wiki/SVC#svcSetGpuMemoryAttribute">switchbrew.org Wiki</a> for more details.
+ * @note Syscall number 0x80.
+ */
+Result svcSetGpuMemoryAttribute(void* addr, u64 size, u32 mask, u32 attr);
 
 /**
  * @brief Maps new insecure memory at the desired address. [15.0.0+]
