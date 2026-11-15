@@ -145,11 +145,11 @@ Result splGetConfig(SplConfigItem config_item, u64 *out_config) {
         u32 config_item;
     } in = { config_item };
 
-#if defined(__SWITCH2__)
+    #if defined(__SWITCH2__)
     return serviceDispatchInOut(_splGetGeneralSrv(), 1, in, *out_config);
-#else
+    #else
     return serviceDispatchInOut(_splGetGeneralSrv(), 0, in, *out_config);
-#endif
+    #endif
 }
 
 Result splUserExpMod(const void *input, const void *modulus, const void *exp, size_t exp_size, void *dst) {
@@ -178,6 +178,16 @@ Result splSetConfig(SplConfigItem config_item, u64 value) {
 }
 
 Result splGetRandomBytes(void *out, size_t out_size) {
+    #if defined(__SWITCH2__)
+    return serviceDispatch(_splGetGeneralSrv(), 0,
+        .buffer_attrs = {
+            SfBufferAttr_HipcPointer | SfBufferAttr_Out,
+        },
+        .buffers = {
+            { out, out_size },
+        },
+    );
+    #else
     return serviceDispatch(_splGetGeneralSrv(), 7,
         .buffer_attrs = {
             SfBufferAttr_HipcPointer | SfBufferAttr_Out,
@@ -186,14 +196,15 @@ Result splGetRandomBytes(void *out, size_t out_size) {
             { out, out_size },
         },
     );
+    #endif
 }
 
 Result splIsDevelopment(bool *out_is_development) {
-#if defined(__SWITCH2__)
+    #if defined(__SWITCH2__)
     return _splCmdNoInOutBool(_splGetGeneralSrv(), out_is_development, 3);
-#else
+    #else
     return _splCmdNoInOutBool(_splGetGeneralSrv(), out_is_development, 11);
-#endif
+    #endif
 }
 
 Result splSetBootReason(u32 value) {
